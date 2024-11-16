@@ -3,60 +3,126 @@
 
 // seus #includes vão aqui
 #include "fila.h"
+#include "utils.h"
+#include "theboys.h"
+#include "fprio.h"
+#include "eventos.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 // seus #defines vão aqui
 
+
 // minimize o uso de variáveis globais
+
+int inicia_herois(struct heroi_t herois[]) {
+    
+    for (int i = 0; i < N_HEROIS; i++) {
+        herois[i].id = i;
+        herois[i].base_id = -1;
+        herois[i].experiencia = 0;
+        herois[i].paciencia = aleat(0, 100);
+        herois[i].velocidade  = aleat(50, 5000);
+        if (!(herois[i].habilidades = cjto_aleat(N_HABILIDADES, 3)))
+            return 0;
+    }
+
+    return 1;
+}
+
+int inicia_bases(struct base_t bases[]) {
+
+    for (int i = 0; i < N_BASES; i++) {
+        bases[i].id = i;
+        bases[i].local = cria_coordenada(aleat(0, N_TAMANHO_MUNDO - 1), 
+                                         aleat(0, N_TAMANHO_MUNDO - 1));
+        bases[i].lotacao = aleat(3, 10);
+        bases[i].espera = fila_cria();
+        if (!(bases[i].presentes = cjto_cria(bases[i].lotacao + 1)))
+            return 0;
+    }
+
+    return 1;
+}
+
+int inicia_missoes(struct missao_t missoes[]) {
+
+    for (int i = 0; i < N_MISSOES; i++) {
+        missoes[i].id = i;
+        missoes[i].perigo = aleat(0, 100);
+        missoes[i].local = cria_coordenada(aleat(0, N_TAMANHO_MUNDO - 1), 
+                                           aleat(0, N_TAMANHO_MUNDO - 1));
+        if (!(missoes[i].habilidades = cjto_aleat(N_HABILIDADES, aleat(6, 10))))
+            return 0;
+    }
+
+    return 1;
+}
+
+void destroi_herois(struct heroi_t herois[]) {
+    for (int i = 0; i < N_HEROIS; i++) {
+        if (herois[i].habilidades != NULL)
+            cjto_destroi(herois[i].habilidades);
+    }
+}
+
+void destroi_bases(struct base_t bases[]) {
+    for (int i = 0; i < N_BASES; i++) {
+        if (bases[i].presentes != NULL)
+            cjto_destroi(bases[i].presentes);
+        if (bases[i].espera != NULL)
+            fila_destroi(bases[i].espera);
+    }
+}
+
+void destroi_missoes(struct missao_t missoes[]) {
+    for (int i = 0; i < N_MISSOES; i++) {
+        if (missoes[i].habilidades != NULL)
+            cjto_destroi(missoes[i].habilidades);
+    }
+}
 
 // programa principal
 int main ()
 {
+    srand(0);
+ 
+    struct fprio_t *lef = fprio_cria();
+    struct mundo_t m;
+
     // iniciar o mundo
 
-    // executar o laço de simulação
+    if (!(inicia_herois(m.herois))) {
+        printf("Erro ao inicializar herois");
+        return 1;
+    }
+    
+    if (!(inicia_bases(m.bases))) {
+        printf("Erro ao inicializar bases");
+        return 1;
 
-    // destruir o mundo
+    }
 
-    struct fila_t *f = fila_cria();
-    fila_imprime(f);
-    int *valor = malloc(sizeof(int));
-    if (valor == NULL) {
+    if (!(inicia_missoes(m.missoes))) {
+        printf("Erro ao inicializar missões");
         return 1;
     }
 
-    queue(f, 10);
-    fila_imprime(f);
-    queue(f, 20);
-    fila_imprime(f);
-    queue(f, 30);
-    fila_imprime(f);
-    queue(f, 40);
-    fila_imprime(f);
-    queue(f, 50);
-    fila_imprime(f);
+    if (!(inicia_eventos(&m, lef)))
+        return 1;
 
-    printf("%d\n", fila_tamanho(f));
+    fprio_imprime(lef);
 
-    printf("%d\n", dequeue(f, valor));
-    fila_imprime(f);
-    printf("%d\n", dequeue(f, valor));   
-    fila_imprime(f);
-    printf("%d\n", dequeue(f, valor));   
-    fila_imprime(f);
-    printf("%d\n", dequeue(f, valor));   
-    fila_imprime(f);
-    printf("vaiza? %d\n", fila_vazia(f));
-    printf("%d\n", dequeue(f, valor));   
-    fila_imprime(f);
-
-    printf("%d\n", fila_tamanho(f));
-
-    printf("vaiza? %d\n", fila_vazia(f));
+    if (!(simular_eventos(&m, lef))) {
+        return 1;
+    }
 
 
-    free(valor);
-    fila_destroi(f);
+    destroi_herois(m.herois);
+    destroi_bases(m.bases);
+    destroi_missoes(m.missoes);
+
+    fprio_destroi(lef);
 
     return (0) ;
 }

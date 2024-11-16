@@ -38,7 +38,7 @@ struct fila_t *fila_destroi (struct fila_t *f) {
     return NULL;
 }
 
-int queue (struct fila_t *f, int valor) {
+int enqueue (struct fila_t *f, int valor) {
     struct nodo_t *novo;
 
     // Trata casos inválidos
@@ -47,19 +47,15 @@ int queue (struct fila_t *f, int valor) {
 
     novo->valor = valor;
 
-    if (f->tamanho == 0) {
+    if (f->tamanho == 0)
         f->prim = novo;
-        f->ult = novo;
-        novo->prox = NULL;
-        
-        return f->tamanho++;
-    }
-
-    f->ult->prox = novo;
+    else 
+        f->ult->prox = novo;
+    
     novo->prox = NULL;
     f->ult = novo;
 
-   return f->tamanho++;
+    return ++(f->tamanho);
 }
 
 int dequeue (struct fila_t *f, int *valor) {
@@ -71,7 +67,7 @@ int dequeue (struct fila_t *f, int *valor) {
 
     *valor = f->prim->valor;
     aux = f->prim;
-    f->prim = f->prim->prox;
+    f->prim = aux->prox;
     free(aux);
 
     if (f->prim == NULL)

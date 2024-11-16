@@ -17,7 +17,18 @@
 #define N_BASES          N_HEROIS / 5
 #define N_MISSOES        T_FIM_DO_MUNDO / 100
 
-typedef struct heroi_t {
+#define EV_CHEGA 1
+#define EV_ESPERA 2
+#define EV_DESISTE 3
+#define EV_AVISA 4
+#define EV_ENTRA 5
+#define EV_SAI 6
+#define EV_VIAJA 7
+#define EV_MORRE 8
+#define EV_MISSAO 9
+#define EV_FIM 10
+
+struct heroi_t {
     int id;
     struct cjto_t *habilidades;
     int paciencia;
@@ -26,29 +37,22 @@ typedef struct heroi_t {
     int base_id;
 };
 
-
-typedef struct coordenada_t {
-    int x;
-    int y;
-};
-
-
-typedef struct base_t {
+struct base_t {
     int id;
     int lotacao;
-    struct cjto_t presentes;
-    struct fila_t espera;
+    struct cjto_t *presentes;
+    struct fila_t *espera;
     struct coordenada_t local;
 };
 
-typedef struct missao_t {
+struct missao_t {
     int id;
-    struct cjto_t habilidades;
+    struct cjto_t *habilidades;
     int perigo;
     struct coordenada_t local;
 };
 
-typedef struct mundo_t {
+struct mundo_t {
     int n_herois;
     struct heroi_t herois[N_HEROIS];
     int n_bases;
@@ -60,28 +64,16 @@ typedef struct mundo_t {
     int relogio;
 };
 
-struct heroi_t *cria_heroi(mundo_t *m) {
-    struct heroi_t *h;
+int inicia_herois(struct heroi_t herois[]);
 
-    if (!(h = malloc(sizeof(struct heroi_t))))
-        return NULL;
+int inicia_bases(struct base_t bases[]);
 
-    h->id = m->n_herois;
-    m->n_herois += 1;
-    h->experiencia = 0;
-    h->paciencia = aleat(0, 100);
-    h->velocidade  = aleat(50, 5000);
-    h->habilidades = cjto_aleat(N_HABILIDADES, 3);
+int inicia_missoes(struct missao_t missoes[]);
 
-    return h;
-}
+void destroi_herois(struct heroi_t herois[]);
 
-// TODO!
-struct base_t *cria_base(struct mundo_t *m) {
-    struct base_t *b;
+void destroi_bases(struct base_t bases[]);
 
-    b->id = m->n_bases;
-    m->n_bases += 1;
-}
+void destroi_missoes(struct missao_t missoes[]);
 
 #endif

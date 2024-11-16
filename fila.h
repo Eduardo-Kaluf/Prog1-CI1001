@@ -32,7 +32,7 @@ struct fila_t *fila_destroi (struct fila_t *f);
 
 // Insere o item no início da fila
 // Retorno: número de itens na fila após a operação ou -1 em erro.
-int queue (struct fila_t *f, int valor);
+int enqueue (struct fila_t *f, int valor);
 
 // Retira o item da fila da posição indicada.
 // se a posição for -1, retira do fim.
