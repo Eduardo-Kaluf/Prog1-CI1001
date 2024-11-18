@@ -30,12 +30,11 @@ struct fila_t *fila_destroi (struct fila_t *f);
 // Nas operações insere/retira/consulta/procura, a fila inicia na
 // posição 0 (primeiro item) e termina na posição TAM-1 (último item).
 
-// Insere o item no início da fila
+// Insere o item no final da fila
 // Retorno: número de itens na fila após a operação ou -1 em erro.
 int enqueue (struct fila_t *f, int valor);
 
-// Retira o item da fila da posição indicada.
-// se a posição for -1, retira do fim.
+// Retira primeiro item da fila
 // Retorno: número de itens na fila após a operação ou -1 em erro.
 int dequeue (struct fila_t *f, int *valor);
 
@@ -47,8 +46,8 @@ int fila_tamanho (struct fila_t *f);
 // 0 caso exista algum elemento na fila.
 int fila_vazia (struct fila_t *f);
 
-// Imprime o conteúdo da fila do inicio ao fim no formato "item item ...",
-// com um espaço entre itens, sem espaços antes/depois, sem newline.
+// Imprime o conteúdo da fila do inicio ao fim no formato "[ item item ... item ]",
+// com um espaço entre itens, sem espaços antes/depois, com newline.
 void fila_imprime (struct fila_t *f);
 
 #endif

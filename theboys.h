@@ -62,6 +62,7 @@ struct mundo_t {
     int n_habilidades;
     struct coordenada_t tamanho_mundo;
     int relogio;
+    struct fprio_t *lef;
 };
 
 int inicia_herois(struct heroi_t herois[]);

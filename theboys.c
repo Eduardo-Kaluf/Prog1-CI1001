@@ -90,6 +90,8 @@ int main ()
     struct fprio_t *lef = fprio_cria();
     struct mundo_t m;
 
+    m.lef = lef;
+
     // iniciar o mundo
 
     if (!(inicia_herois(m.herois))) {
