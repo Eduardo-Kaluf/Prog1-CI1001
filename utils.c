@@ -19,7 +19,6 @@ struct coordenada_t cria_coordenada(int x, int y) {
     return c;
 }
 
-// TODO
-// int d_cartesiana(struct coordenada_t p1, struct coordenada_t p2) {
-//     return sqrt(pow(p2.x - p1.x) + (p2.y - p1.y))
-// }
+double d_cartesiana(struct coordenada_t p1, struct coordenada_t p2) {
+    return sqrt(pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2));
+}

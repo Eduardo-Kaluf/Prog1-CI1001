@@ -110,10 +110,12 @@ int main ()
         return 1;
     }
 
+    // FAZER UM INICIA MUNDO
+
     if (!(inicia_eventos(&m, lef)))
         return 1;
 
-    fprio_imprime(lef);
+    // fprio_imprime(lef);
 
     if (!(simular_eventos(&m, lef))) {
         return 1;

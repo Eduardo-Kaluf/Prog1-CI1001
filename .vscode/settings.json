@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "eventos.h": "c",
-        "fprio.h": "c"
+        "fprio.h": "c",
+        "theboys.h": "c",
+        "numbers": "c"
     }
 }

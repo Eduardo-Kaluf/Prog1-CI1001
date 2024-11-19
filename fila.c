@@ -97,7 +97,7 @@ void fila_imprime (struct fila_t *f) {
     struct nodo_t *p;
 
     // Trata casos inválidos
-    if (f == NULL || f->tamanho == 0)
+    if (f == NULL)
         return;
 
     p = f->prim;
@@ -110,7 +110,10 @@ void fila_imprime (struct fila_t *f) {
         p = p->prox;
     }
 
-    printf("%d ]\n", p->valor);
-    
+    if (f->tamanho)
+        printf("%d ]\n", p->valor);
+    else
+        printf(" ]\n");
+
     return;
 }

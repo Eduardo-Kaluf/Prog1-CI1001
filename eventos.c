@@ -48,7 +48,7 @@ int simular_eventos(struct mundo_t *m, struct fprio_t *lef) {
     int evento_id;
     int tempo;
 
-    while ((e = (struct evento *) fprio_retira(lef, &evento_id, &tempo))) {
+    while ((e = fprio_retira(lef, &evento_id, &tempo))) {
         switch (evento_id) {
         case EV_CHEGA:
             printf("%6d: CHEGA  HEROI %2d BASE %d (%2d/%2d) ", 
@@ -59,21 +59,31 @@ int simular_eventos(struct mundo_t *m, struct fprio_t *lef) {
                 m->bases[e->info2].lotacao
             );
             
-            chega(tempo, e, m);
+            chega(tempo, (struct ev_hb *) e, m);
             break;
         case EV_ESPERA:
 
-            espera(tempo, e, m);
+            espera(tempo, (struct ev_hb *) e, m);
             break;
         case EV_DESISTE:
+
+            desiste(tempo, (struct ev_hb *) e, m);
             break;
         case EV_AVISA:
+        
+            avisa(tempo, (struct ev_b *) e, m);
             break;
         case EV_ENTRA:
+        
+            entra(tempo, (struct ev_hb *) e, m);
             break;
         case EV_SAI:
+            
+            sai(tempo, (struct ev_hb *) e, m);
             break;
         case EV_VIAJA:
+
+            viaja(tempo, (struct ev_hb *) e, m);
             break;
         case EV_MORRE:
             break;
@@ -89,6 +99,7 @@ int simular_eventos(struct mundo_t *m, struct fprio_t *lef) {
     return 1;
 }
 
+// TODO: VER SE É POSSIVEL UTILZIAR evento COMO UMA STRUCT GENÉRICA OU SE PRECISO USAR AS ESPECIFICAS
 int add_evento(struct mundo_t *m, int tipo, int tempo, int info1, int info2) {
     struct evento *e;
         
@@ -103,10 +114,10 @@ int add_evento(struct mundo_t *m, int tipo, int tempo, int info1, int info2) {
     return 1;
 }
 
-void chega(int tempo, struct evento *e, struct mundo_t *m) {
+void chega(int tempo, struct ev_hb *e, struct mundo_t *m) {
+    struct heroi_t h = m->herois[e->h_id];
+    struct base_t b = m->bases[e->b_id];
     int espera;
-    struct heroi_t h = m->herois[e->info1];
-    struct base_t b = m->bases[e->info2];
 
     if (b.presentes->num != b.lotacao && b.espera->tamanho == 0)
         espera = 1;
@@ -126,24 +137,23 @@ void chega(int tempo, struct evento *e, struct mundo_t *m) {
 }
 
 // Devo usar h.id ou e->info1?
-void espera(int tempo, struct evento *e, struct mundo_t *m) {
-    struct heroi_t h = m->herois[e->info1];
-    struct base_t b = m->bases[e->info2];
+void espera(int tempo, struct ev_hb *e, struct mundo_t *m) {
+    struct heroi_t h = m->herois[e->h_id];
+    struct base_t b = m->bases[e->b_id];
     
-    enqueue(b.espera, h.id);
-    add_evento(m, EV_AVISA, tempo, b.id, -1);
-
     printf("%6d: ESPERA HEROI %2d BASE %d (%2d)\n",
         tempo,
         h.id,
         b.id,
         b.espera->tamanho);
 
+    enqueue(b.espera, h.id);
+    add_evento(m, EV_AVISA, tempo, b.id, -1);
 }
 
-void desiste(int tempo, struct evento *e, struct mundo_t *m) {
-    struct heroi_t h = m->herois[e->info1];
-    struct base_t b = m->bases[e->info2];
+void desiste(int tempo,struct ev_hb *e, struct mundo_t *m) {
+    struct heroi_t h = m->herois[e->h_id];
+    struct base_t b = m->bases[e->b_id];
     
     int base_dest = aleat(0, N_BASES - 1);
 
@@ -156,9 +166,9 @@ void desiste(int tempo, struct evento *e, struct mundo_t *m) {
 
 }
 
-void avisa(int tempo, struct evento *e, struct mundo_t *m) {
-    struct base_t b = m->bases[e->info1];
-    int *h_id;
+void avisa(int tempo, struct ev_b *e, struct mundo_t *m) {
+    struct base_t b = m->bases[e->b_id];
+    int h_id;
     
     printf("%6d: AVISA  PORTEIRO BASE %d (%2d/%2d) FILA ",
         tempo,
@@ -168,23 +178,25 @@ void avisa(int tempo, struct evento *e, struct mundo_t *m) {
     );
     
     fila_imprime(b.espera);
-    
-    while (b.espera->tamanho != 0 && b.presentes->num != b.lotacao) {
 
-        dequeue(b.espera, h_id);
+    while (b.espera->tamanho != 0 && b.presentes->num != b.lotacao) {
+        
+        dequeue(b.espera, &h_id); 
         cjto_insere(b.presentes, h_id);
         add_evento(m, EV_ENTRA, tempo, h_id, b.id);
 
         printf("%6d: AVISA  PORTEIRO BASE %d ADMITE %2d\n", 
-            tempo,
-            b.id,
-            h_id);
+           tempo,
+           b.id,
+           h_id);
     }
+
+    
 }
 
-void entra(int tempo, struct evento *e, struct mundo_t *m) {
-    struct heroi_t h = m->herois[e->info1];
-    struct base_t b = m->bases[e->info2];
+void entra(int tempo, struct ev_hb *e, struct mundo_t *m) {
+    struct heroi_t h = m->herois[e->h_id];
+    struct base_t b = m->bases[e->b_id];
 
     int tpb = 15 + h.paciencia * aleat(0, 20);
 
@@ -194,16 +206,16 @@ void entra(int tempo, struct evento *e, struct mundo_t *m) {
         tempo,
         h.id,
         b.id,
-        b.espera->tamanho + 1,
+        b.presentes->num,
         b.lotacao,
-        tpb);
+        tempo + tpb);
     
     return;
 }
 
-void sai(int tempo, struct evento *e, struct mundo_t *m) {
-    struct heroi_t h = m->herois[e->info1];
-    struct base_t b = m->bases[e->info2];
+void sai(int tempo, struct ev_hb *e, struct mundo_t *m) {
+    struct heroi_t h = m->herois[e->h_id];
+    struct base_t b = m->bases[e->b_id];
     
     cjto_retira(b.presentes, b.id);
     int base_dest = aleat(0, N_BASES - 1);
@@ -214,20 +226,22 @@ void sai(int tempo, struct evento *e, struct mundo_t *m) {
         tempo,
         h.id,
         b.id,
-        b.espera->tamanho - 1,
+        b.espera->tamanho,
         b.lotacao);
 
     return;
 }
 
-void viaja(int tempo, struct evento *e, struct mundo_t *m) {
-    struct heroi_t h = m->herois[e->info1];
-    struct base_t b = m->bases[e->info2];
+void viaja(int tempo, struct ev_hb *e, struct mundo_t *m) {
+    struct heroi_t h = m->herois[e->h_id];
+    struct base_t b = m->bases[e->b_id];
+    double distancia, duracao;
 
-    // calcula duração da viagem:
-    //     distância = distância cartesiana entre a base atual de H e a base D 
-    //     duração = distância / velocidade de H
-    // cria e insere na LEF o evento CHEGA (agora + duração, H, D)
+    distancia = d_cartesiana(m->bases[h.base_id].local, b.local);
+    duracao = (int) (distancia / h.velocidade);
+
+    add_evento(m, EV_CHEGA, tempo + duracao, h.id, b.id);
+
 
     return;
 }
