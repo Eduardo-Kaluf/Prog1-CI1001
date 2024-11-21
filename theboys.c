@@ -23,10 +23,10 @@ int inicia_herois(struct heroi_t herois[]) {
         herois[i].experiencia = 0;
         herois[i].paciencia = aleat(0, 100);
         herois[i].velocidade  = aleat(50, 5000);
-        if (!(herois[i].habilidades = cjto_aleat(N_HABILIDADES, 3)))
+        if (!(herois[i].habilidades = cjto_aleat(3, N_HABILIDADES)))
             return 0;
-    }
-
+    }   
+    
     return 1;
 }
 
@@ -38,7 +38,7 @@ int inicia_bases(struct base_t bases[]) {
                                          aleat(0, N_TAMANHO_MUNDO - 1));
         bases[i].lotacao = aleat(3, 10);
         bases[i].espera = fila_cria();
-        if (!(bases[i].presentes = cjto_cria(bases[i].lotacao + 1)))
+        if (!(bases[i].presentes = cjto_cria(N_HEROIS)))
             return 0;
     }
 

@@ -15,11 +15,11 @@ struct ev_b {
 
 struct ev_hm {
     int h_id;
-    int m_id
+    int m_id;
 };
 
 struct ev_m {
-    int m_id
+    int m_id;
 };
 
 struct evento {

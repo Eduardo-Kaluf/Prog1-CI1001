@@ -54,14 +54,6 @@ int simular_eventos(struct mundo_t *m, struct fprio_t *lef) {
     while ((e = fprio_retira(lef, &evento_id, &tempo))) {
         switch (evento_id) {
         case EV_CHEGA:
-            printf("%6d: CHEGA  HEROI %2d BASE %d (%2d/%2d) ", 
-                tempo,
-                e->info1,
-                e->info2,
-                m->bases[e->info2].presentes->num,
-                m->bases[e->info2].lotacao
-            );
-            
             chega(tempo, (struct ev_hb *) e, m);
             break;
         case EV_ESPERA:
@@ -93,8 +85,8 @@ int simular_eventos(struct mundo_t *m, struct fprio_t *lef) {
         case EV_MISSAO:
             break;
         case EV_FIM:
-            break;
-
+            fim(tempo);
+            return 0;
         }
 
     }
@@ -122,6 +114,18 @@ void chega(int tempo, struct ev_hb *e, struct mundo_t *m) {
     struct base_t b = m->bases[e->b_id];
     int espera;
 
+    printf("%6d: CHEGA  HEROI %2d BASE %d (%2d/%2d) ", 
+        tempo,
+        h.id,
+        b.id,
+        cjto_card(b.presentes),
+        b.lotacao
+    );
+
+    // ATUALIZA A BASE DO HEROI EM SI E NÃO A CÓPIA !!!
+    //h.base_id = b.id;
+    m->herois[e->h_id].base_id = b.id;
+
     if (b.presentes->num != b.lotacao && b.espera->tamanho == 0)
         espera = 1;
     else
@@ -148,7 +152,7 @@ void espera(int tempo, struct ev_hb *e, struct mundo_t *m) {
         tempo,
         h.id,
         b.id,
-        b.espera->tamanho);
+        fila_tamanho(b.espera));
 
     enqueue(b.espera, h.id);
     add_evento(m, EV_AVISA, tempo, b.id, -1);
@@ -176,7 +180,7 @@ void avisa(int tempo, struct ev_b *e, struct mundo_t *m) {
     printf("%6d: AVISA  PORTEIRO BASE %d (%2d/%2d) FILA ",
         tempo,
         b.id,
-        b.espera->tamanho,
+        cjto_card(b.presentes),
         b.lotacao
     );
     
@@ -202,16 +206,17 @@ void entra(int tempo, struct ev_hb *e, struct mundo_t *m) {
     struct base_t b = m->bases[e->b_id];
 
     int tpb = 15 + h.paciencia * aleat(0, 20);
-    
-    h.base_id = b.id;
-    
+        
+    cjto_imprime(b.presentes);
+    printf("BASEAAAA\n");
+
     add_evento(m, EV_SAI, tempo + tpb, h.id, b.id);
 
     printf("%6d: ENTRA  HEROI %2d BASE %d (%2d/%2d) SAI %d\n",
         tempo,
         h.id,
         b.id,
-        b.presentes->num,
+        cjto_card(b.presentes),
         b.lotacao,
         tempo + tpb);
     
@@ -226,13 +231,12 @@ void sai(int tempo, struct ev_hb *e, struct mundo_t *m) {
     int base_dest = aleat(0, N_BASES - 1);
     add_evento(m, EV_VIAJA, tempo, h.id, base_dest);
     add_evento(m, EV_AVISA, tempo, b.id, -1);
-    h.base_id = -1;
-
+    
     printf("%6d: SAI    HEROI %2d BASE %d (%2d/%2d)\n",
         tempo,
         h.id,
         b.id,
-        b.espera->tamanho,
+        cjto_card(b.presentes),
         b.lotacao);
 
     return;
@@ -241,12 +245,23 @@ void sai(int tempo, struct ev_hb *e, struct mundo_t *m) {
 void viaja(int tempo, struct ev_hb *e, struct mundo_t *m) {
     struct heroi_t h = m->herois[e->h_id];
     struct base_t b = m->bases[e->b_id];
-    double distancia, duracao;
+    int duracao, distancia;
 
-    distancia = d_cartesiana(m->bases[h.base_id].local, b.local);
-    duracao = (int) (distancia / h.velocidade);
+    // TODO VERIFICAR CAST
+    printf("ATENÇÃO %d\n", h.base_id);
+    distancia = (int) d_cartesiana(m->bases[h.base_id].local, b.local);
+    duracao = (distancia / h.velocidade);
 
     add_evento(m, EV_CHEGA, tempo + duracao, h.id, b.id);
+
+    printf("%6d: VIAJA  HEROI %2d BASE %d BASE %d DIST %d VEL %d CHEGA %d\n",
+        tempo,
+        h.id,
+        h.base_id,
+        b.id,
+        distancia,
+        h.velocidade,
+        tempo + duracao); 
 
 
     return;
@@ -263,9 +278,10 @@ void morre(int tempo, struct ev_hm *e, struct mundo_t *m) {
 
     cjto_retira(b.presentes, h.id);
 
+    // TODO ATUALIZAR O HEROI NO MUNDO E NÃO A CÓPIA
     // id = -1 implica que o herói está morto
-    h.id = -1;
-    h.base_id = -1;
+    //h.id = -1;
+    // h.base_id = -1;
 
     add_evento(m, EV_AVISA, tempo, b.id, -1);
 
@@ -299,7 +315,6 @@ void missao(int tempo, struct ev_m *e, struct mundo_t *m) {
     for (int i = 0; i < N_BASES; i++) {
         b = m->bases[distancias[i].id];
         struct heroi_t h[b.presentes->num];
-        int found = 0;
         int risco;
         struct cjto_t *uniao = cjto_cria(cjto_card(mi.habilidades));
         
@@ -317,7 +332,6 @@ void missao(int tempo, struct ev_m *e, struct mundo_t *m) {
                 risco = mi.perigo / (h[i].paciencia + h->experiencia + 1.0);
                 if (risco > aleat(0, 30))
                     add_evento(m, EV_MORRE, tempo, h->id, -1);
-                // TODO VERIFICAR SE A EXPERIENCIA GANHADA É 1
                 else
                     h->experiencia += 1;
             }
