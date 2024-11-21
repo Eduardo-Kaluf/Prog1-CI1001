@@ -1,4 +1,1 @@
-Como devo incializar o mundo
-Posso alterar as structs? (adicionar campo na struct mundo)
-Como devo fazer a implementação de adicionar um evento na fila
-mundo deve ser global?
+Como devo fazer a uniao dos conjuntos dos herois?

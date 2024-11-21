@@ -13,6 +13,15 @@ struct ev_b {
     int b_id;
 };
 
+struct ev_hm {
+    int h_id;
+    int m_id
+};
+
+struct ev_m {
+    int m_id
+};
+
 struct evento {
     int info1;
     int info2;
@@ -40,9 +49,9 @@ void sai(int tempo, struct ev_hb *e, struct mundo_t *m);
 
 void viaja(int tempo, struct ev_hb *e, struct mundo_t *m);
 
-void morre(int tempo, struct evento *e, struct mundo_t *m);
+void morre(int tempo, struct ev_hm *e, struct mundo_t *m);
 
-void missao(int tempo, struct missao_t m);
+void missao(int tempo, struct ev_m *e, struct mundo_t *m);
 
 void fim(int tempo);
 

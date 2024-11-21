@@ -7,7 +7,10 @@
 
 #include <stdio.h>
 
+// TODO: TROCAR AS OPERAÇÕES DO CONJUNTO (EXEMPLO CNJT.NUM TROCAR PAR CJNT_CARDINALIDADE())
 
+
+// TODO: RETIRAR "evento"
 int inicia_eventos(struct mundo_t *m, struct fprio_t *lef) {
     int base, tempo; 
     struct evento *it;
@@ -199,7 +202,9 @@ void entra(int tempo, struct ev_hb *e, struct mundo_t *m) {
     struct base_t b = m->bases[e->b_id];
 
     int tpb = 15 + h.paciencia * aleat(0, 20);
-
+    
+    h.base_id = b.id;
+    
     add_evento(m, EV_SAI, tempo + tpb, h.id, b.id);
 
     printf("%6d: ENTRA  HEROI %2d BASE %d (%2d/%2d) SAI %d\n",
@@ -221,6 +226,7 @@ void sai(int tempo, struct ev_hb *e, struct mundo_t *m) {
     int base_dest = aleat(0, N_BASES - 1);
     add_evento(m, EV_VIAJA, tempo, h.id, base_dest);
     add_evento(m, EV_AVISA, tempo, b.id, -1);
+    h.base_id = -1;
 
     printf("%6d: SAI    HEROI %2d BASE %d (%2d/%2d)\n",
         tempo,
@@ -246,13 +252,92 @@ void viaja(int tempo, struct ev_hb *e, struct mundo_t *m) {
     return;
 }
 
-// void morre(int tempo, struct heroi_t h, struct base_t b, struct missao_t m) {
-//     return;
-// }
+void morre(int tempo, struct ev_hm *e, struct mundo_t *m) {
+    struct heroi_t h = m->herois[e->h_id];
+    struct base_t b = m->bases[h.base_id];
 
-// void missao(int tempo, struct missao_t m) {
-//     return;
-// }
+    printf("%6d: MORRE  HEROI %2d MISSAO %d\n",
+        tempo,
+        h.id,
+        e->m_id); 
+
+    cjto_retira(b.presentes, h.id);
+
+    // id = -1 implica que o herói está morto
+    h.id = -1;
+    h.base_id = -1;
+
+    add_evento(m, EV_AVISA, tempo, b.id, -1);
+
+    return;
+}
+
+void missao(int tempo, struct ev_m *e, struct mundo_t *m) {
+    struct missao_t mi = m->missoes[e->m_id];
+    struct dist_base distancias[N_BASES];
+    struct base_t b; 
+
+    for (int i = 0; i < N_BASES; i++) {
+        distancias[i] = (struct dist_base) {
+            .id = i,
+            .distancia = d_cartesiana(mi.local, m->bases[i].local)
+        };
+    }
+
+    // ShellSort utilizando a sequência de Knuth
+    ordena_dist_bases(distancias, N_BASES);
+
+    //TODO REMOVER DPS
+    for (int i = 0; i < N_BASES; i++) {
+        printf("%d", distancias[i].distancia);
+    }
+
+
+    // TODO VERIFICAR ESSA UNIÃO
+
+
+    for (int i = 0; i < N_BASES; i++) {
+        b = m->bases[distancias[i].id];
+        struct heroi_t h[b.presentes->num];
+        int found = 0;
+        int risco;
+        struct cjto_t *uniao = cjto_cria(cjto_card(mi.habilidades));
+        
+        for (int i = 0; i < N_HEROIS; i++) {
+            if (cjto_pertence(b.presentes, m->herois[i].id))
+                uniao = cjto_uniao(uniao, m->herois[i].habilidades);
+        }
+
+        if (cjto_contem(uniao, mi.habilidades)) {
+            // MISSAO CUMPRIDA
+            mi.id = -1;
+            // TODO VERIFICAR SE O NUMERO DE HEROIS QUE VÃO PARA A MISSÃO
+            // TODO É O MESMO NUMERO DE HEROIS PRESENTES NA BASE 
+            for (int i = 0; i < b.presentes->num; i++) {
+                risco = mi.perigo / (h[i].paciencia + h->experiencia + 1.0);
+                if (risco > aleat(0, 30))
+                    add_evento(m, EV_MORRE, tempo, h->id, -1);
+                // TODO VERIFICAR SE A EXPERIENCIA GANHADA É 1
+                else
+                    h->experiencia += 1;
+            }
+        }
+        // VERIFICAR ESSE ELSE
+        else
+            add_evento(m, EV_MISSAO, tempo + 24*60, mi.id, -1);
+    }
+
+    return;
+}
+
+// se houver uma BMP:
+//     marca a missão M como cumprida
+//     para cada herói H presente na BMP:
+//         risco = perigo (M) / (paciência (H) + experiência (H) + 1.0)
+//         se risco > aleatório (0, 30):
+//             cria e insere na LEF o evento MORRE (agora, H)
+//         senão:
+//             incrementa a experiência de H
 
 void fim(int tempo) {
     printf("ESTATISTICAS: %d\n", tempo);
