@@ -15,6 +15,7 @@
 
 // minimize o uso de variáveis globais
 
+// TODO REVISAR A INICIALIZAÇÃO DOS HEROIS BASES E DOS EVENTOS!
 int inicia_herois(struct heroi_t herois[]) {
     
     for (int i = 0; i < N_HEROIS; i++) {
@@ -118,6 +119,7 @@ int main ()
     // fprio_imprime(lef);
 
     if (!(simular_eventos(&m, lef))) {
+        printf("AAAAAA");
         return 1;
     }
 
@@ -127,6 +129,8 @@ int main ()
     destroi_missoes(m.missoes);
 
     fprio_destroi(lef);
+
+    printf("FIMFIMFIM");
 
     return (0) ;
 }
