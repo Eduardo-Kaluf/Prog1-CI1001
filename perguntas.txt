@@ -1,1 +1,1 @@
-Como devo fazer a uniao dos conjuntos dos herois?
+Posso acessar "flag" do conjunto.h? Não estou quebrando o TAD?

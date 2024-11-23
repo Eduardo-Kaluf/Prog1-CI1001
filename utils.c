@@ -23,38 +23,16 @@ double d_cartesiana(struct coordenada_t p1, struct coordenada_t p2) {
     return sqrt(pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2));
 }
 
-void ordena_dist_bases(struct dist_base v[], int n) {
-    int k = 1;
+// Ordena um vetor de "struct dist_base" utilizando o InsertionSort
+void ordena_distancias(struct dist_base v[], int n) {
+    for (int i = 1; i < n; ++i) {
+        struct dist_base key = v[i];
+        int j = i - 1;
 
-    do {
-        k = k * 3 + 1;
-    } while (k <= n);
-
-    do {
-        k = k / 3;
-
-        shell_sort(v, k, n);
-        
-    } while (k != 1);
-}
-
-void shell_sort(struct dist_base v[], int k, int n) {
-    int i, j;
-    struct dist_base aux;
-
-    for (i = k + 1; i <= n; i++) {
-        aux = v[i];
-        j = i;
-
-        while (j > k && v[j - k].distancia > aux.distancia ) {
-
-            v[j] = v[j - k];
-
-            j = j - k;
-            if (j <= k)
-                break;
+        while (j >= 0 && v[j].distancia > key.distancia) {
+            v[j + 1] = v[j];
+            j = j - 1;
         }
-
-        v[j] = aux;
+        v[j + 1] = key;
     }
 }

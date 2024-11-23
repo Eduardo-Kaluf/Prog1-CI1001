@@ -1,7 +1,6 @@
 // programa principal do projeto "The Boys - 2024/2"
 // Autor: Eduardo Kaluf, GRR 20241770
 
-// seus #includes vão aqui
 #include "fila.h"
 #include "utils.h"
 #include "theboys.h"
@@ -10,10 +9,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-// seus #defines vão aqui
-
-
-// minimize o uso de variáveis globais
 
 // TODO REVISAR A INICIALIZAÇÃO DOS HEROIS BASES E DOS EVENTOS!
 int inicia_herois(struct heroi_t herois[]) {

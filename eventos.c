@@ -85,6 +85,8 @@ int simular_eventos(struct mundo_t *m, struct fprio_t *lef) {
         case EV_MORRE:
             break;
         case EV_MISSAO:
+
+            missao(tempo, (struct ev_m *) e, m);
             break;
         case EV_FIM:
             
@@ -299,6 +301,8 @@ void missao(int tempo, struct ev_m *e, struct mundo_t *m) {
     struct dist_base distancias[N_BASES];
     struct base_t b; 
 
+    printf("ENTREI");
+
     for (int i = 0; i < N_BASES; i++) {
         distancias[i] = (struct dist_base) {
             .id = i,
@@ -307,44 +311,53 @@ void missao(int tempo, struct ev_m *e, struct mundo_t *m) {
     }
 
     // ShellSort utilizando a sequência de Knuth
-    ordena_dist_bases(distancias, N_BASES);
-
-    //TODO REMOVER DPS
-    for (int i = 0; i < N_BASES; i++) {
-        printf("%d", distancias[i].distancia);
-    }
-
-
+    ordena_distancias(distancias, N_BASES);
+    
     // TODO VERIFICAR ESSA UNIÃO
-
-
     for (int i = 0; i < N_BASES; i++) {
-        b = m->bases[distancias[i].id];
-        struct heroi_t h[b.presentes->num];
-        int risco;
-        struct cjto_t *uniao = cjto_cria(cjto_card(mi.habilidades));
-        
-        for (int i = 0; i < N_HEROIS; i++) {
-            if (cjto_pertence(b.presentes, m->herois[i].id))
-                uniao = cjto_uniao(uniao, m->herois[i].habilidades);
-        }
+        int herois[cjto_card(b.presentes)];
+        int i;
+        int j = 0;
 
-        if (cjto_contem(uniao, mi.habilidades)) {
-            // MISSAO CUMPRIDA
-            mi.id = -1;
-            // TODO VERIFICAR SE O NUMERO DE HEROIS QUE VÃO PARA A MISSÃO
-            // TODO É O MESMO NUMERO DE HEROIS PRESENTES NA BASE 
-            for (int i = 0; i < b.presentes->num; i++) {
-                risco = mi.perigo / (h[i].paciencia + h->experiencia + 1.0);
-                if (risco > aleat(0, 30))
-                    add_evento(m, EV_MORRE, tempo, h->id, -1);
-                else
-                    h->experiencia += 1;
-            }
-        }
-        // VERIFICAR ESSE ELSE
-        else
-            add_evento(m, EV_MISSAO, tempo + 24*60, mi.id, -1);
+        // b = m->bases[distancias[i].id];
+        // int risco;
+        // struct cjto_t *uniao = cjto_cria(cjto_card(mi.habilidades));
+        
+        // for (int i = 0; i < N_HEROIS; i++) {
+        //     if (b.presentes->flag[i] == 1) {
+        //         herois[j] = i;
+        //         j++;
+        //     }
+        // }
+
+        // cjto_imprime(b.presentes);
+        // printf("\n");
+        // for (int i = 0; i < b.presentes->num; i++) {
+        //     printf("%d ", herois[i]);
+        // }
+
+
+        // for (int i = 0; i < N_HEROIS; i++) {
+        //     if (cjto_pertence(b.presentes, m->herois[i].id))
+        //         uniao = cjto_uniao(uniao, m->herois[i].habilidades);
+        // }
+
+        // if (cjto_contem(uniao, mi.habilidades)) {
+        //     // MISSAO CUMPRIDA
+        //     mi.id = -1;
+        //     // TODO VERIFICAR SE O NUMERO DE HEROIS QUE VÃO PARA A MISSÃO
+        //     // TODO É O MESMO NUMERO DE HEROIS PRESENTES NA BASE 
+        //     for (int i = 0; i < b.presentes->num; i++) {
+        //         risco = mi.perigo / (h[i].paciencia + h->experiencia + 1.0);
+        //         if (risco > aleat(0, 30))
+        //             add_evento(m, EV_MORRE, tempo, h->id, -1);
+        //         else
+        //             h->experiencia += 1;
+        //     }
+        // }
+        // // VERIFICAR ESSE ELSE
+        // else
+        //     add_evento(m, EV_MISSAO, tempo + 24*60, mi.id, -1);
     }
 
     return;
