@@ -1,3 +1,8 @@
+/* 
+ * Trabalho: TheBoys
+ * Arquivo de implementação para as funções de eventos
+ * Feito em 08/12/2024 para a disciplina CI1001 - Programação 1
+*/
 
 #include "theboys.h"
 #include "eventos.h"
@@ -297,11 +302,26 @@ void morre(int tempo, struct ev_hm *e, struct mundo_t *m) {
 
 // TODO FINALIZAR MISSAO
 void missao(int tempo, struct ev_m *e, struct mundo_t *m) {
+    m->missoes[e->m_id].tentativa += 1;
     struct missao_t mi = m->missoes[e->m_id];
     struct dist_base distancias[N_BASES];
     struct base_t b; 
+    int bmp = 0;
+    struct cjto_t *uni;
+    int risco;
+    // 10 é o número máximo de heróis presentes em uma base
+    int herois[10];
 
-    printf("ENTREI");
+
+
+    printf("%6d: MISSAO %d TENT %d HAB REQ: [ ", 
+        tempo,
+        mi.id,
+        mi.tentativa);
+    
+    cjto_imprime(mi.habilidades);
+
+    printf(" ]\n");
 
     for (int i = 0; i < N_BASES; i++) {
         distancias[i] = (struct dist_base) {
@@ -313,64 +333,56 @@ void missao(int tempo, struct ev_m *e, struct mundo_t *m) {
     // ShellSort utilizando a sequência de Knuth
     ordena_distancias(distancias, N_BASES);
     
-    // TODO VERIFICAR ESSA UNIÃO
     for (int i = 0; i < N_BASES; i++) {
-        int herois[cjto_card(b.presentes)];
-        int i;
+        b = m->bases[distancias[i].id];
         int j = 0;
-
-        // b = m->bases[distancias[i].id];
-        // int risco;
-        // struct cjto_t *uniao = cjto_cria(cjto_card(mi.habilidades));
+        uni = cjto_cria(cjto_card(mi.habilidades));
         
-        // for (int i = 0; i < N_HEROIS; i++) {
-        //     if (b.presentes->flag[i] == 1) {
-        //         herois[j] = i;
-        //         j++;
-        //     }
-        // }
+        for (int i = 0; i < N_HEROIS; i++) {
+            if (b.presentes->flag[i] == 1) {
+                herois[j] = i;
+                j++;
+            }
+        }
 
-        // cjto_imprime(b.presentes);
-        // printf("\n");
-        // for (int i = 0; i < b.presentes->num; i++) {
-        //     printf("%d ", herois[i]);
-        // }
+        for (int i = 0; i < cjto_card(b.presentes); i++) {
+            uni = cjto_uniao(uni, m->herois[herois[i]].habilidades);
+        }
 
+        if (cjto_contem(uni, mi.habilidades)) {
+            bmp = 1;
+            break;
+        }
+    }
 
-        // for (int i = 0; i < N_HEROIS; i++) {
-        //     if (cjto_pertence(b.presentes, m->herois[i].id))
-        //         uniao = cjto_uniao(uniao, m->herois[i].habilidades);
-        // }
+    if (bmp) {
+        printf("%6d: MISSAO %d CUMPRIDA BASE %d HABS: [ ",
+            tempo,
+            mi.id,
+            b.id);
 
-        // if (cjto_contem(uniao, mi.habilidades)) {
-        //     // MISSAO CUMPRIDA
-        //     mi.id = -1;
-        //     // TODO VERIFICAR SE O NUMERO DE HEROIS QUE VÃO PARA A MISSÃO
-        //     // TODO É O MESMO NUMERO DE HEROIS PRESENTES NA BASE 
-        //     for (int i = 0; i < b.presentes->num; i++) {
-        //         risco = mi.perigo / (h[i].paciencia + h->experiencia + 1.0);
-        //         if (risco > aleat(0, 30))
-        //             add_evento(m, EV_MORRE, tempo, h->id, -1);
-        //         else
-        //             h->experiencia += 1;
-        //     }
-        // }
-        // // VERIFICAR ESSE ELSE
-        // else
-        //     add_evento(m, EV_MISSAO, tempo + 24*60, mi.id, -1);
+        cjto_imprime(uni);
+        printf(" ]\n"); 
+
+        mi.id = -1;
+
+        for (int i = 0; i < cjto_card(b.presentes); i++) {
+            risco = mi.perigo / (m->herois[herois[i]].paciencia + m->herois[herois[i]].experiencia + 1.0);
+            if (risco > aleat(0, 30))
+                add_evento(m, EV_MORRE, tempo, herois[i], -1);
+            else
+                m->herois[herois[i]].experiencia += 1;
+        }
+    }
+    else {
+        printf("%6d: MISSAO %d IMPOSSIVEL\n",
+            tempo,
+            mi.id);
+        add_evento(m, EV_MISSAO, tempo + 24*60, mi.id, -1);
     }
 
     return;
 }
-
-// se houver uma BMP:
-//     marca a missão M como cumprida
-//     para cada herói H presente na BMP:
-//         risco = perigo (M) / (paciência (H) + experiência (H) + 1.0)
-//         se risco > aleatório (0, 30):
-//             cria e insere na LEF o evento MORRE (agora, H)
-//         senão:
-//             incrementa a experiência de H
 
 void fim(int tempo) {
     printf("ESTATISTICAS: %d\n", tempo);

@@ -1,5 +1,9 @@
-// programa principal do projeto "The Boys - 2024/2"
-// Autor: Eduardo Kaluf, GRR 20241770
+/* 
+ * Trabalho: TheBoys
+ * Autor: Eduardo Kaluf, GRR 20241770
+ * Programa principal
+ * Feito em 08/12/2024 para a disciplina CI1001 - Programação 1
+*/
 
 #include "fila.h"
 #include "utils.h"
@@ -45,6 +49,7 @@ int inicia_missoes(struct missao_t missoes[]) {
 
     for (int i = 0; i < N_MISSOES; i++) {
         missoes[i].id = i;
+        missoes[i].tentativa = 0;
         missoes[i].perigo = aleat(0, 100);
         missoes[i].local = cria_coordenada(aleat(0, N_TAMANHO_MUNDO - 1), 
                                            aleat(0, N_TAMANHO_MUNDO - 1));

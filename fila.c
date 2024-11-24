@@ -1,5 +1,8 @@
-// TAD fila implementação
-// Autor: Eduardo Kaluf, GRR 20241770
+/* 
+ * Trabalho: TheBoys
+ * Arquivo de implementação para o TAD fila
+ * Feito em 08/12/2024 para a disciplina CI1001 - Programação 1
+*/
 
 #include "fila.h"
 

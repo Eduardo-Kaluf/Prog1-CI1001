@@ -1,3 +1,8 @@
+/* 
+ * Trabalho: TheBoys
+ * Arquivo de implementação para as funções utilitárias do projeto
+ * Feito em 08/12/2024 para a disciplina CI1001 - Programação 1
+*/
 
 #include <stdlib.h>
 #include "utils.h"

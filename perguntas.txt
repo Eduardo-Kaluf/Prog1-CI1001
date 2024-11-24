@@ -1,1 +1,3 @@
 Posso acessar "flag" do conjunto.h? Não estou quebrando o TAD?
+Devo testar apenas a bmp ou todas as bases que podem resolver a missão? (porém em ordem)
+Preciso usar o módulo lista que foi passado? não faz sentido apenas criar outro chamado fila?

@@ -1,5 +1,8 @@
-// TAD fila
-// Autor: Eduardo Kaluf, GRR 20241770
+/* 
+ * Trabalho: TheBoys
+ * Arquivo header para o TAD fila
+ * Feito em 08/12/2024 para a disciplina CI1001 - Programação 1
+*/
 
 #ifndef FILA
 #define FILA
