@@ -15,15 +15,35 @@
 #include <stdio.h>
 
 // TODO REVISAR A INICIALIZAÇÃO DOS HEROIS BASES E DOS EVENTOS!
+int inicia_mundo(struct mundo_t *m, struct fprio_t *lef) {
+
+    m->n_herois = N_HEROIS;
+    m->n_bases = N_BASES;
+    m->n_missoes = N_MISSOES;
+    m->n_habilidades = N_HABILIDADES;
+    m->relogio = T_INICIO;
+    m->mortes = 0;
+    m->tamanho_mundo = cria_coordenada(N_TAMANHO_MUNDO, N_TAMANHO_MUNDO);
+    m->lef = lef;
+    m->missoes_cumpridas = 0;
+    m->ev_processados = 0;
+    m->max_tentativas = 0;
+    m->min_tentativas = 0;
+    m->tentativas = 0;
+
+    return 1;
+}
+
 int inicia_herois(struct heroi_t herois[]) {
     
     for (int i = 0; i < N_HEROIS; i++) {
         herois[i].id = i;
-        herois[i].base_id = -1;
         herois[i].experiencia = 0;
         herois[i].paciencia = aleat(0, 100);
         herois[i].velocidade  = aleat(50, 5000);
-        if (!(herois[i].habilidades = cjto_aleat(3, N_HABILIDADES)))
+        herois[i].base_id = -1;
+        herois[i].morto = 0;
+        if (!(herois[i].habilidades = cjto_aleat(aleat(1, 3), N_HABILIDADES)))
             return 0;
     }   
     
@@ -34,9 +54,10 @@ int inicia_bases(struct base_t bases[]) {
 
     for (int i = 0; i < N_BASES; i++) {
         bases[i].id = i;
+        bases[i].participacao = 0;
         bases[i].local = cria_coordenada(aleat(0, N_TAMANHO_MUNDO - 1), 
                                          aleat(0, N_TAMANHO_MUNDO - 1));
-        bases[i].lotacao = aleat(3, 10);
+        bases[i].lotacao = aleat(B_LOTACAO_MIN, B_LOTACAO_MAX);
         bases[i].espera = fila_cria();
         if (!(bases[i].presentes = cjto_cria(N_HEROIS)))
             return 0;
@@ -48,12 +69,13 @@ int inicia_bases(struct base_t bases[]) {
 int inicia_missoes(struct missao_t missoes[]) {
 
     for (int i = 0; i < N_MISSOES; i++) {
+        missoes[i].cumprida = 0;
         missoes[i].id = i;
         missoes[i].tentativa = 0;
         missoes[i].perigo = aleat(0, 100);
         missoes[i].local = cria_coordenada(aleat(0, N_TAMANHO_MUNDO - 1), 
                                            aleat(0, N_TAMANHO_MUNDO - 1));
-        if (!(missoes[i].habilidades = cjto_aleat(N_HABILIDADES, aleat(6, 10))))
+        if (!(missoes[i].habilidades = cjto_aleat(aleat(6, 10), N_HABILIDADES)))
             return 0;
     }
 
@@ -90,10 +112,8 @@ int main ()
  
     struct fprio_t *lef = fprio_cria();
     struct mundo_t m;
-
-    m.lef = lef;
-
-    // iniciar o mundo
+    
+    inicia_mundo(&m, lef);
 
     if (!(inicia_herois(m.herois))) {
         printf("Erro ao inicializar herois");
@@ -111,18 +131,11 @@ int main ()
         return 1;
     }
 
-    // FAZER UM INICIA MUNDO
-
-    if (!(inicia_eventos(&m, lef)))
+    if (!(inicia_eventos(&m)))
         return 1;
 
-    // fprio_imprime(lef);
-
-    if (!(simular_eventos(&m, lef))) {
-        printf("AAAAAA");
+    if (!(simular_eventos(&m, lef)))
         return 1;
-    }
-
 
     destroi_herois(m.herois);
     destroi_bases(m.bases);
@@ -130,8 +143,5 @@ int main ()
 
     fprio_destroi(lef);
 
-    printf("FIMFIMFIM");
-
     return (0) ;
 }
-

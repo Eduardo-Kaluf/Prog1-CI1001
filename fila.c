@@ -18,6 +18,7 @@ struct fila_t *fila_cria () {
     f->prim = NULL;
     f->ult = NULL;
     f->tamanho = 0;
+    f->max = 0;
 
     return f;
 }
@@ -58,7 +59,13 @@ int enqueue (struct fila_t *f, int valor) {
     novo->prox = NULL;
     f->ult = novo;
 
-    return ++(f->tamanho);
+    f->tamanho += 1;
+
+    if (f->tamanho > f->max) {
+        f->max = f->tamanho;
+    }
+
+    return f->tamanho;
 }
 
 int dequeue (struct fila_t *f, int *valor) {
@@ -84,6 +91,13 @@ int fila_tamanho (struct fila_t *f) {
         return -1;
 
     return f->tamanho;
+}
+
+int fila_max (struct fila_t *f) {
+    if (f == NULL)
+        return -1;
+
+    return f->max;
 }
 
 int fila_vazia (struct fila_t *f) {

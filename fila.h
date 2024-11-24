@@ -20,6 +20,7 @@ struct fila_t
   struct nodo_t *prim ;	// primeiro item
   struct nodo_t *ult ;		// último item
   int tamanho ;		// número de itens da fila
+  int max ;
 } ;
 
 // Cria uma fila vazia.
@@ -44,6 +45,10 @@ int dequeue (struct fila_t *f, int *valor);
 // Informa o tamanho da fila (o número de itens presentes nela).
 // Retorno: número de itens na fila ou -1 em erro.
 int fila_tamanho (struct fila_t *f);
+
+// Informa o tamanho máximo da fila (o maior número de itens presentes nela ao mesmo tempo).
+// Retorno: número máximo de itens da fila ou -1 em erro.
+int fila_max (struct fila_t *f);
 
 // Retorna 1 se a fila é vazia.
 // 0 caso exista algum elemento na fila.

@@ -23,14 +23,17 @@
 #define N_BASES          N_HEROIS / 5
 #define N_MISSOES        T_FIM_DO_MUNDO / 100
 
+#define B_LOTACAO_MAX    10
+#define B_LOTACAO_MIN    3
+
 #define EV_CHEGA 1
 #define EV_ESPERA 2
 #define EV_DESISTE 3
-#define EV_AVISA 4
+#define EV_MORRE 4
 #define EV_ENTRA 5
 #define EV_SAI 6
 #define EV_VIAJA 7
-#define EV_MORRE 8
+#define EV_AVISA 8
 #define EV_MISSAO 9
 #define EV_FIM 10
 
@@ -41,6 +44,7 @@ struct heroi_t {
     int velocidade;
     int experiencia;
     int base_id;
+    int morto;
 };
 
 struct base_t {
@@ -49,6 +53,7 @@ struct base_t {
     struct cjto_t *presentes;
     struct fila_t *espera;
     struct coordenada_t local;
+    int participacao;
 };
 
 struct missao_t {
@@ -57,6 +62,7 @@ struct missao_t {
     int perigo;
     struct coordenada_t local;
     int tentativa;
+    int cumprida;
 };
 
 struct mundo_t {
@@ -69,8 +75,16 @@ struct mundo_t {
     int n_habilidades;
     struct coordenada_t tamanho_mundo;
     int relogio;
+    int mortes;
     struct fprio_t *lef;
+    int missoes_cumpridas;
+    int ev_processados;
+    int max_tentativas;
+    int min_tentativas;
+    int tentativas;
 };
+
+int inicia_mundo(struct mundo_t *m, struct fprio_t *lef);
 
 int inicia_herois(struct heroi_t herois[]);
 
