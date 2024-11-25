@@ -37,32 +37,32 @@ struct evento {
  * Eventos iniciais
 */
 
-int inicia_eventos(struct mundo_t *m);
+int inicia_eventos (struct mundo_t *m);
 
-void att_ev_mi_info(struct mundo_t *m, int mi_id, int b_id, int bmp);
+void att_ev_mi_info (struct mundo_t *m, int mi_id, int b_id, int bmp);
 
-int add_evento(struct mundo_t *m, int tipo, int tempo, int info1, int info2);
+int add_evento (struct mundo_t *m, int tipo, int tempo, int info1, int info2);
 
-void chega(struct ev_hb *e, struct mundo_t *m);
+void chega (struct ev_hb *e, struct mundo_t *m);
 
-void espera(struct ev_hb *e, struct mundo_t *m);
+void espera (struct ev_hb *e, struct mundo_t *m);
 
-void desiste(struct ev_hb *e, struct mundo_t *m);
+void desiste (struct ev_hb *e, struct mundo_t *m);
 
-void avisa(struct ev_b *e, struct mundo_t *m);
+void avisa (struct ev_b *e, struct mundo_t *m);
 
-void entra(struct ev_hb *e, struct mundo_t *m);
+void entra (struct ev_hb *e, struct mundo_t *m);
 
-void sai(struct ev_hb *e, struct mundo_t *m);
+void sai (struct ev_hb *e, struct mundo_t *m);
 
-void viaja(struct ev_hb *e, struct mundo_t *m);
+void viaja (struct ev_hb *e, struct mundo_t *m);
 
-void morre(struct ev_hm *e, struct mundo_t *m);
+void morre (struct ev_hm *e, struct mundo_t *m);
 
-void missao(struct ev_m *e, struct mundo_t *m);
+void missao (struct ev_m *e, struct mundo_t *m);
 
-void fim(struct mundo_t *m);
+void fim (struct mundo_t *m);
 
-int simular_eventos(struct mundo_t *m, struct fprio_t *lef);
+void simular_eventos (struct mundo_t *m);
 
 #endif

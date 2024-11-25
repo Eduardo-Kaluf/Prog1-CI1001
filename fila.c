@@ -4,10 +4,10 @@
  * Feito em 08/12/2024 para a disciplina CI1001 - Programação 1
 */
 
-#include "fila.h"
-
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "fila.h"
 
 struct fila_t *fila_cria () {
     struct fila_t *f;

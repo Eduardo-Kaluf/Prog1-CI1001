@@ -5,9 +5,10 @@
 */
 
 #include <stdlib.h>
+#include <math.h>
+
 #include "utils.h"
 #include "eventos.h"
-#include <math.h>
 
 int aleat (int min, int max) {
     int range = max - min + 1;

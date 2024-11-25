@@ -11,12 +11,6 @@
 #include "utils.h"
 #include "logger.h"
 
-#include <stdio.h>
-
-// TODO: VER EM QUAIS SITUAÇÕES DEVO CHEGAR SE O HERÓI ESTÁ MORTO 
-// TODO: POSSIVELMENTE ADICIONAR UM "MORTOS" NO MUNDO, PARA MANTER TRACKING DE QUANTOS HEROIS MORRERAM
-// TODO: ADICIONAR ESPAÇOS NOS HEADERS
-
 int add_evento(struct mundo_t *m, int tipo, int tempo, int info1, int info2) {
     struct evento *e;
         
@@ -38,7 +32,8 @@ void att_ev_mi_info(struct mundo_t *m, int mi_id, int b_id, int bmp) {
     m->tentativas += 1;
     
     if (bmp) {
-        m->missoes[mi_id].cumprida += 1;
+        m->missoes[mi_id].cumprida = 1;
+        m->missoes_cumpridas += 1;
         m->bases[b_id].participacao += 1;
     }
 
@@ -49,7 +44,6 @@ void att_ev_mi_info(struct mundo_t *m, int mi_id, int b_id, int bmp) {
 
     if (mi.tentativa < m->min_tentativas)
         m->min_tentativas = mi.tentativa;
-
 }
 
 int inicia_eventos(struct mundo_t *m) {
@@ -59,13 +53,15 @@ int inicia_eventos(struct mundo_t *m) {
     for (int i = 0; i < N_HEROIS; i++) {
         base = aleat(0, N_BASES - 1);
         tempo = aleat(0, 4320);
-        add_evento(m, EV_CHEGA, tempo, m->herois[i].id, base);
+        if (!(add_evento(m, EV_CHEGA, tempo, m->herois[i].id, base)))
+            return 0;
     }
 
     // Agenda as missões
     for (int i = 0; i < N_MISSOES; i++) {
         tempo = aleat(0, T_FIM_DO_MUNDO);
-        add_evento(m, EV_MISSAO, tempo, m->missoes[i].id, -1);
+        if (!(add_evento(m, EV_MISSAO, tempo, m->missoes[i].id, -1)))
+            return 0;
     }
 
     // Agenda o fim do mundo
@@ -74,14 +70,12 @@ int inicia_eventos(struct mundo_t *m) {
     return 1;
 }
 
-int simular_eventos(struct mundo_t *m, struct fprio_t *lef) {
+void simular_eventos(struct mundo_t *m) {
     struct evento *e;
     int evento_id, tempo, h_id;
 
-    while ((e = fprio_retira(lef, &evento_id, &tempo))) {
+    while ((e = fprio_retira(m->lef, &evento_id, &tempo))) {
         
-        m->relogio = tempo;
-
         // Caso heroi esteja morto, ignora evento
         if (evento_id < EV_AVISA) {
             h_id = ((struct ev_hb *) e)->h_id;
@@ -92,10 +86,10 @@ int simular_eventos(struct mundo_t *m, struct fprio_t *lef) {
             }
         }
 
+        m->relogio = tempo;
         m->ev_processados += 1;
 
         switch (evento_id) {
-
             case EV_CHEGA:
 
                 chega((struct ev_hb *) e, m);
@@ -136,14 +130,12 @@ int simular_eventos(struct mundo_t *m, struct fprio_t *lef) {
                 
                 fim(m);
                 free(e);
-                return 1;
+                return;
         }
 
         free(e);
 
     }
-
-    return 1;
 }
 
 void chega(struct ev_hb *e, struct mundo_t *m) {
@@ -162,15 +154,13 @@ void chega(struct ev_hb *e, struct mundo_t *m) {
         espera = (h.paciencia > (10 * fila_tamanho(b.espera)));
 
     if (espera) {
-        printf("ESPERA\n");
+        log_chega_espera();
         add_evento(m, EV_ESPERA, tempo, h.id, b.id);
     }
     else {
-        printf("DESISTE\n");
+        log_chega_desiste();
         add_evento(m, EV_DESISTE, tempo, h.id, b.id);
     }
-
-    return;
 }
 
 void espera(struct ev_hb *e, struct mundo_t *m) {
@@ -183,8 +173,6 @@ void espera(struct ev_hb *e, struct mundo_t *m) {
     enqueue(b.espera, h.id);
 
     add_evento(m, EV_AVISA, tempo, b.id, -1);
-
-    return;
 }
 
 void desiste(struct ev_hb *e, struct mundo_t *m) {
@@ -197,8 +185,6 @@ void desiste(struct ev_hb *e, struct mundo_t *m) {
     base_dest = aleat(0, N_BASES - 1);
 
     add_evento(m, EV_VIAJA, tempo, h.id, base_dest);
-
-    return;
 }
 
 void morre(struct ev_hm *e, struct mundo_t *m) {
@@ -214,8 +200,6 @@ void morre(struct ev_hm *e, struct mundo_t *m) {
     m->mortes += 1;
 
     add_evento(m, EV_AVISA, tempo, b.id, -1);
-
-    return;
 }
 
 void entra(struct ev_hb *e, struct mundo_t *m) {
@@ -229,8 +213,6 @@ void entra(struct ev_hb *e, struct mundo_t *m) {
     add_evento(m, EV_SAI, saida, h.id, b.id);
 
     log_entra(tempo, h.id, b, saida);
-    
-    return;
 }
 
 void sai(struct ev_hb *e, struct mundo_t *m) {
@@ -246,8 +228,6 @@ void sai(struct ev_hb *e, struct mundo_t *m) {
     add_evento(m, EV_AVISA, tempo, b.id, -1);
     
     log_sai(tempo, h.id, b);
-
-    return;
 }
 
 void viaja(struct ev_hb *e, struct mundo_t *m) {
@@ -262,8 +242,6 @@ void viaja(struct ev_hb *e, struct mundo_t *m) {
     add_evento(m, EV_CHEGA, chegada, h.id, b.id);
 
     log_viaja(tempo, h, b.id, distancia, chegada);
-
-    return;
 }
 
 void avisa(struct ev_b *e, struct mundo_t *m) {
@@ -280,11 +258,8 @@ void avisa(struct ev_b *e, struct mundo_t *m) {
 
         log_avisa_admite(tempo, b.id, h_id);
     }
-
-    return;
 }
 
-// TODO FINALIZAR MISSAO
 void missao(struct ev_m *e, struct mundo_t *m) {
     struct missao_t mi = m->missoes[e->m_id];
     struct dist_base distancias[N_BASES];
@@ -302,6 +277,7 @@ void missao(struct ev_m *e, struct mundo_t *m) {
 
     ordena_distancias(distancias, N_BASES);
     
+    // Começa a analisar base por base
     for (int i = 0; i < N_BASES; i++) {
         b = m->bases[distancias[i].id];
         uni = cjto_cria(cjto_card(mi.habilidades));
@@ -331,6 +307,7 @@ void missao(struct ev_m *e, struct mundo_t *m) {
         cjto_destroi(uni);
     }
 
+    // Atualiza as informações relacionadas a essa missão
     att_ev_mi_info(m, mi.id, b.id, bmp);
 
     log_missao_tentativa(tempo, mi);
@@ -338,10 +315,7 @@ void missao(struct ev_m *e, struct mundo_t *m) {
     if (bmp) {
         log_missao_cumprida(tempo, mi.id, b.id, uni);
 
-        // Atualiza a missão do mundo e não a cópia
-        m->missoes[mi.id].cumprida = 1;
-        m->missoes_cumpridas += 1;
-
+        // Verifica quais heróis morreram e quais obteram sucesso na missão
         for (int i = 0; i < cjto_card(b.presentes); i++) {
             risco = mi.perigo / (m->herois[herois[i]].paciencia 
                                + m->herois[herois[i]].experiencia + 1.0);
@@ -358,22 +332,20 @@ void missao(struct ev_m *e, struct mundo_t *m) {
         log_missao_impossivel(tempo, mi.id);
         add_evento(m, EV_MISSAO, tempo + 24*60, mi.id, -1);
     }
-
-    return;
 }
 
 void fim(struct mundo_t *m) {
     struct heroi_t h;
 
-    printf("%d: FIM\n", m->relogio);
+    log_fim(m);
 
     for (int i = 0; i < N_HEROIS; i++) {
         h = m->herois[i];
 
         if (h.morto)
-            log_fim_morto(h.id);
+            log_h_morto(h.id);
         else
-            log_fim_vivo(h.id);
+            log_h_vivo(h.id);
     
         log_heroi_info(h);
     }
@@ -383,7 +355,4 @@ void fim(struct mundo_t *m) {
     }
 
     log_statisticas(m);
-    
-    return;
 }
-

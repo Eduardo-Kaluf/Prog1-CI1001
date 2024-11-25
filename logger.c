@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+#include "logger.h"
 #include "conjunto.h"
 #include "theboys.h"
 #include "fila.h"
@@ -18,6 +19,14 @@ void log_chega(int tempo, int h_id, struct base_t b) {
         cjto_card(b.presentes),
         b.lotacao
     );
+}
+
+void log_chega_espera() {
+    printf("ESPERA\n");
+}
+
+void log_chega_desiste() {
+    printf("DESISTE\n");
 }
 
 void log_espera(int tempo, int h_id, struct base_t b) {
@@ -128,11 +137,15 @@ void log_missao_impossivel(int tempo, int mi_id) {
     );
 }
 
-void log_fim_morto(int h_id) {
+void log_fim(struct mundo_t *m) {
+    printf("%d: FIM\n", m->relogio);
+}
+
+void log_h_morto(int h_id) {
     printf("HEROI %2d MORTO  ", h_id);
 }
 
-void log_fim_vivo(int h_id) {
+void log_h_vivo(int h_id) {
     printf("HEROI %2d VIVO  ", h_id);
 }
 

@@ -4,10 +4,10 @@
  * Feito em 08/12/2024 para a disciplina CI1001 - Programação 1
 */
 
-#include "lista.h"
-
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "lista.h"
 
 struct lista_t *lista_cria () {
     struct lista_t *l;
@@ -225,7 +225,6 @@ int lista_tamanho (struct lista_t *lst) {
     return lst->tamanho;
 }
 
-// TODO REVISAR ESSA FUNÇÃO
 void lista_imprime (struct lista_t *lst) {
     struct item_t *p;
 

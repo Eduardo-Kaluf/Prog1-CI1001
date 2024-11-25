@@ -5,17 +5,16 @@
  * Feito em 08/12/2024 para a disciplina CI1001 - Programação 1
 */
 
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "fila.h"
 #include "utils.h"
 #include "theboys.h"
 #include "fprio.h"
 #include "eventos.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-
-// TODO REVISAR A INICIALIZAÇÃO DOS HEROIS BASES E DOS EVENTOS!
-int inicia_mundo(struct mundo_t *m, struct fprio_t *lef) {
+int inicia_mundo(struct mundo_t *m) {
 
     m->n_herois = N_HEROIS;
     m->n_bases = N_BASES;
@@ -24,7 +23,7 @@ int inicia_mundo(struct mundo_t *m, struct fprio_t *lef) {
     m->relogio = T_INICIO;
     m->mortes = 0;
     m->tamanho_mundo = cria_coordenada(N_TAMANHO_MUNDO, N_TAMANHO_MUNDO);
-    m->lef = lef;
+    m->lef = fprio_cria();
     m->missoes_cumpridas = 0;
     m->ev_processados = 0;
     m->max_tentativas = 0;
@@ -105,15 +104,12 @@ void destroi_missoes(struct missao_t missoes[]) {
     }
 }
 
-// programa principal
-int main ()
-{
+int main () {
     srand(0);
  
-    struct fprio_t *lef = fprio_cria();
     struct mundo_t m;
     
-    inicia_mundo(&m, lef);
+    inicia_mundo(&m);
 
     if (!(inicia_herois(m.herois))) {
         printf("Erro ao inicializar herois");
@@ -123,7 +119,6 @@ int main ()
     if (!(inicia_bases(m.bases))) {
         printf("Erro ao inicializar bases");
         return 1;
-
     }
 
     if (!(inicia_missoes(m.missoes))) {
@@ -131,17 +126,18 @@ int main ()
         return 1;
     }
 
-    if (!(inicia_eventos(&m)))
+    if (!(inicia_eventos(&m))) {
+        printf("Erro ao inicializar eventos");
         return 1;
+    }
 
-    if (!(simular_eventos(&m, lef)))
-        return 1;
-
+    simular_eventos(&m);
+    
     destroi_herois(m.herois);
     destroi_bases(m.bases);
     destroi_missoes(m.missoes);
 
-    fprio_destroi(lef);
+    fprio_destroi(m.lef);
 
-    return (0) ;
+    return 0;
 }

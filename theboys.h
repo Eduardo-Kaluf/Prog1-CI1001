@@ -14,9 +14,7 @@
 #include "utils.h"
 
 #define T_INICIO         0
-// TODO
 #define T_FIM_DO_MUNDO   525600
-//#define T_FIM_DO_MUNDO   3000
 #define N_TAMANHO_MUNDO  20000
 #define N_HABILIDADES    10
 #define N_HEROIS         N_HABILIDADES * 5
@@ -84,18 +82,18 @@ struct mundo_t {
     int tentativas;
 };
 
-int inicia_mundo(struct mundo_t *m, struct fprio_t *lef);
+int inicia_mundo (struct mundo_t *m);
 
-int inicia_herois(struct heroi_t herois[]);
+int inicia_herois (struct heroi_t herois[]);
 
-int inicia_bases(struct base_t bases[]);
+int inicia_bases (struct base_t bases[]);
 
-int inicia_missoes(struct missao_t missoes[]);
+int inicia_missoes (struct missao_t missoes[]);
 
-void destroi_herois(struct heroi_t herois[]);
+void destroi_herois (struct heroi_t herois[]);
 
-void destroi_bases(struct base_t bases[]);
+void destroi_bases (struct base_t bases[]);
 
-void destroi_missoes(struct missao_t missoes[]);
+void destroi_missoes (struct missao_t missoes[]);
 
 #endif

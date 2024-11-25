@@ -11,6 +11,10 @@
 
 void log_chega (int tempo, int h_id, struct base_t b);
 
+void log_chega_espera();
+
+void log_chega_desiste();
+
 void log_espera (int tempo, int h_id, struct base_t b);
 
 void log_desiste (int tempo, int h_id, int b_id);
@@ -33,9 +37,11 @@ void log_missao_cumprida (int tempo, int b_id, int mi_id, struct cjto_t *uni);
 
 void log_missao_impossivel (int tempo, int mi_id);
 
-void log_fim_morto (int h_id);
+void log_fim(struct mundo_t *m);
 
-void log_fim_vivo (int h_id);
+void log_h_morto (int h_id);
+
+void log_h_vivo (int h_id);
 
 void log_heroi_info (struct heroi_t h);
 
