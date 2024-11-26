@@ -10,43 +10,72 @@
 #include "theboys.h"
 #include "fprio.h"
 
+// Representa um evento que utiliza "Herói" e "Base"
 struct ev_hb {
     int h_id;
     int b_id;
 };
 
+// Representa um evento que utiliza apenas "Base"
 struct ev_b {
     int b_id;
 };
 
+// Representa um evento que utiliza "Herói" e "Missão"
 struct ev_hm {
     int h_id;
-    int m_id;
+    int mi_id;
 };
 
+// Representa um evento que utiliza apenas "Missão"
 struct ev_m {
-    int m_id;
+    int mi_id;
 };
 
+// Representa um evento genérico
+// Utilizado para inserir eventos na LEF
 struct evento {
     int info1;
     int info2;
 };
 
-/*
- * Eventos iniciais
-*/
 
+/* 
+ * Inicia os primeiros eventos do mundo:
+ *  - Chegada dos heróis
+ *  - Agenda as missões
+ *  - Agenda o fim do mundo
+*/
 int inicia_eventos (struct mundo_t *m);
 
+
+/*
+ * Atualiza as informações que se relacionam as missões
+ * Que serão utilizadas para gerar o relatório no final do mundo.
+*/
 void att_ev_mi_info (struct mundo_t *m, int mi_id, int b_id, int bmp);
 
+/*
+ * Cria e adiciona um evento genérico na LEF
+*/
 int add_evento (struct mundo_t *m, int tipo, int tempo, int info1, int info2);
 
+/*
+ * Representa um herói chegando em uma base.
+ *  - Ao chegar, o herói analisa o tamanho da fila e as vagas da base 
+ *  - Então decide se ESPERA para entrar ou DESISTE
+*/
 void chega (struct ev_hb *e, struct mundo_t *m);
 
+/*
+ * O herói entra na fila de espera da base.
+ * Assim que o herói entra na fila, AVISA o porteiro da base
+*/
 void espera (struct ev_hb *e, struct mundo_t *m);
 
+/*
+ *
+*/
 void desiste (struct ev_hb *e, struct mundo_t *m);
 
 void avisa (struct ev_b *e, struct mundo_t *m);

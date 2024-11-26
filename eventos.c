@@ -192,7 +192,7 @@ void morre(struct ev_hm *e, struct mundo_t *m) {
     struct base_t b = m->bases[h.base_id];
     int tempo = m->relogio;
 
-    log_morre(tempo, h.id, e->m_id);
+    log_morre(tempo, h.id, e->mi_id);
 
     cjto_retira(b.presentes, h.id);
 
@@ -261,7 +261,7 @@ void avisa(struct ev_b *e, struct mundo_t *m) {
 }
 
 void missao(struct ev_m *e, struct mundo_t *m) {
-    struct missao_t mi = m->missoes[e->m_id];
+    struct missao_t mi = m->missoes[e->mi_id];
     struct dist_base distancias[N_BASES];
     struct base_t b; 
     struct cjto_t *uni, *aux;
