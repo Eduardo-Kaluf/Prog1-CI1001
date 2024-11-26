@@ -9,6 +9,12 @@
 
 #include "theboys.h"
 
+/*
+ * Esse módulo inteiro é responsável por exibir as mensagens de depuração do programa.
+ *
+ * Cada função mostra informações importantes para aquele determinado trecho do evento
+*/
+
 void log_chega (int tempo, int h_id, struct base_t b);
 
 void log_chega_espera();

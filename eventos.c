@@ -42,7 +42,7 @@ void att_ev_mi_info(struct mundo_t *m, int mi_id, int b_id, int bmp) {
     if (mi.tentativa > m->max_tentativas)
         m->max_tentativas = mi.tentativa;
 
-    if (mi.tentativa < m->min_tentativas)
+    if ((mi.tentativa < m->min_tentativas || m->min_tentativas == 0) && mi.cumprida == 1)
         m->min_tentativas = mi.tentativa;
 }
 

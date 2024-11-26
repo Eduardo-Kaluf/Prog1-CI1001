@@ -35,6 +35,18 @@
 #define EV_MISSAO 9
 #define EV_FIM 10
 
+/*
+ * Representa um Herói:
+ *
+ * ID: número inteiro que identifica unicamente o herói;
+ * Habilidades: conjunto de habilidades que o herói possui. 
+ * Cada habilidade é representada por um número inteiro ≥ 0;
+ * Paciência: número inteiro ≥ 0. Afeta as decisões de permanência em bases e ﬁlas;
+ * Velocidade: número inteiro ≥ 0. Afeta o tempo de deslocamento entre as bases;
+ * Experiência: número inteiro ≥ 0. Afeta a chance de um herói morrer em uma missão;
+ * Base_id: ID da base onde o herói se encontra no momento.
+ * Morto: 0 ou 1 indica se o Herói está morto (1) ou não (0);
+*/
 struct heroi_t {
     int id;
     struct cjto_t *habilidades;
@@ -45,6 +57,16 @@ struct heroi_t {
     int morto;
 };
 
+/*
+ * Representa uma Base:
+ *
+ * ID: número inteiro ≥ 0 que identifica cada base;
+ * Lotação: número máximo de heróis naquela base;
+ * Presentes: conjunto dos IDs dos heróis que estão atualmente na base;
+ * Espera: fila onde os heróis esperam para poder entrar na base;
+ * Local: localização da base (par de coordenadas inteiras X, Y ≥ 0);
+ * Participacao: Quantidade de missões cumpridas que a Base participou;
+*/
 struct base_t {
     int id;
     int lotacao;
@@ -54,6 +76,16 @@ struct base_t {
     int participacao;
 };
 
+/*
+ * Representa uma Missão:
+ *
+ * ID: número inteiro ≥ 0 que identifica a missão;
+ * Habilidades: conjunto de habilidades necessárias para cumprir a missão;
+ * Perigo: nível de perigo da missão;
+ * Local: localização da missão (par de coordenadas inteiras X, Y ≥ 0).
+ * Tentativa: número inteiro ≥ 0 mostra a quantidade de vezes que tentaram realizar a missão;
+ * Cumprida: 0 ou 1 indica se a missão foi cumprida (1) ou não (0);
+*/
 struct missao_t {
     int id;
     struct cjto_t *habilidades;
@@ -63,6 +95,7 @@ struct missao_t {
     int cumprida;
 };
 
+// TODOJ
 struct mundo_t {
     int n_herois;
     struct heroi_t herois[N_HEROIS];
