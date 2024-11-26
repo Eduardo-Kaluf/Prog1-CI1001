@@ -11,8 +11,10 @@
 
 /*
  * Esse módulo inteiro é responsável por exibir as mensagens de depuração do programa.
+ * Cada função mostra informações importantes para aquele determinado trecho do evento.
  *
- * Cada função mostra informações importantes para aquele determinado trecho do evento
+ * A ideia é deixar o código dos eventos o mais limpo possível,
+ * Sendo assim todos os logs são apenas uma chamada de função
 */
 
 void log_chega (int tempo, int h_id, struct base_t b);

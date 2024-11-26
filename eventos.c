@@ -28,9 +28,16 @@ int add_evento(struct mundo_t *m, int tipo, int tempo, int info1, int info2) {
 void att_ev_mi_info(struct mundo_t *m, int mi_id, int b_id, int bmp) {
     struct missao_t mi;
 
+    // Att a as tentativas do mundo e as da própria missão
     m->missoes[mi_id].tentativa += 1;
     m->tentativas += 1;
     
+    /*
+     *  Caso a missão tenha tido sucesso:
+     *   - Marca-a como cumprida
+     *   - Adiciona uma participação para a Base
+     *   - Att as missões cumpridas do mundo
+    */
     if (bmp) {
         m->missoes[mi_id].cumprida = 1;
         m->missoes_cumpridas += 1;
@@ -39,9 +46,11 @@ void att_ev_mi_info(struct mundo_t *m, int mi_id, int b_id, int bmp) {
 
     mi = m->missoes[mi_id];
 
+    // Att o máximo de tentativas para realizar uma missão
     if (mi.tentativa > m->max_tentativas)
         m->max_tentativas = mi.tentativa;
 
+    // Att o mínimo de tentativas para realizar uma missão
     if ((mi.tentativa < m->min_tentativas || m->min_tentativas == 0) && mi.cumprida == 1)
         m->min_tentativas = mi.tentativa;
 }
@@ -74,6 +83,7 @@ void simular_eventos(struct mundo_t *m) {
     struct evento *e;
     int evento_id, tempo, h_id;
 
+    // Repete enquanto houver eventos na fila
     while ((e = fprio_retira(m->lef, &evento_id, &tempo))) {
         
         // Caso heroi esteja morto, ignora evento
@@ -89,6 +99,7 @@ void simular_eventos(struct mundo_t *m) {
         m->relogio = tempo;
         m->ev_processados += 1;
 
+        // Seleciona o evento
         switch (evento_id) {
             case EV_CHEGA:
 
@@ -196,6 +207,7 @@ void morre(struct ev_hm *e, struct mundo_t *m) {
 
     cjto_retira(b.presentes, h.id);
 
+    // Atualiza o herói que pertence ao mundo e não a cópia
     m->herois[e->h_id].morto = 1;
     m->mortes += 1;
 
@@ -265,7 +277,8 @@ void missao(struct ev_m *e, struct mundo_t *m) {
     struct dist_base distancias[N_BASES];
     struct base_t b; 
     struct cjto_t *uni, *aux;
-    int risco, j, bmp = 0, herois[B_LOTACAO_MAX], tempo = m->relogio;
+    int risco, j, bmp = 0, tempo = m->relogio;
+    int herois[B_LOTACAO_MAX];
 
     // Calcula a distância de cada base em relação a missão
     for (int i = 0; i < N_BASES; i++) {
@@ -280,12 +293,12 @@ void missao(struct ev_m *e, struct mundo_t *m) {
     // Começa a analisar base por base
     for (int i = 0; i < N_BASES; i++) {
         b = m->bases[distancias[i].id];
-        uni = cjto_cria(cjto_card(mi.habilidades));
+        uni = cjto_cria(N_HABILIDADES);
         j = 0;
         
         // Descobre quais heróis estão presentes na base
         for (int i = 0; i < N_HEROIS; i++) {
-            if (b.presentes->flag[i] == 1) {
+            if (cjto_pertence(b.presentes, i)) {
                 herois[j] = i;
                 j++;
             }

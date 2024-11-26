@@ -20,7 +20,7 @@ struct fila_t
   struct nodo_t *prim ;	// primeiro item
   struct nodo_t *ult ;		// último item
   int tamanho ;		// número de itens da fila
-  int max ;
+  int max ; // máximo de itens presentes em uma fila
 } ;
 
 // Cria uma fila vazia.
@@ -30,9 +30,6 @@ struct fila_t *fila_cria ();
 // Remove todos os itens da fila e libera a memória.
 // Retorno: NULL.
 struct fila_t *fila_destroi (struct fila_t *f);
-
-// Nas operações insere/retira/consulta/procura, a fila inicia na
-// posição 0 (primeiro item) e termina na posição TAM-1 (último item).
 
 // Insere o item no final da fila
 // Retorno: número de itens na fila após a operação ou -1 em erro.
@@ -52,10 +49,11 @@ int fila_max (struct fila_t *f);
 
 // Retorna 1 se a fila é vazia.
 // 0 caso exista algum elemento na fila.
+// -1 em erro.
 int fila_vazia (struct fila_t *f);
 
 // Imprime o conteúdo da fila do inicio ao fim no formato "[ item item ... item ]",
-// com um espaço entre itens, sem espaços antes/depois, com newline.
+// com um espaço entre itens, com espaços antes/depois, com newline.
 void fila_imprime (struct fila_t *f);
 
 #endif

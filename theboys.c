@@ -20,9 +20,9 @@ int inicia_mundo(struct mundo_t *m) {
     m->n_bases = N_BASES;
     m->n_missoes = N_MISSOES;
     m->n_habilidades = N_HABILIDADES;
+    m->tamanho_mundo = cria_coordenada(N_TAMANHO_MUNDO, N_TAMANHO_MUNDO);
     m->relogio = T_INICIO;
     m->mortes = 0;
-    m->tamanho_mundo = cria_coordenada(N_TAMANHO_MUNDO, N_TAMANHO_MUNDO);
     m->lef = fprio_cria();
     m->missoes_cumpridas = 0;
     m->ev_processados = 0;
@@ -40,7 +40,7 @@ int inicia_herois(struct heroi_t herois[]) {
         herois[i].experiencia = 0;
         herois[i].paciencia = aleat(0, 100);
         herois[i].velocidade  = aleat(50, 5000);
-        herois[i].base_id = -1;
+        herois[i].base_id = H_BASE_INI;
         herois[i].morto = 0;
         if (!(herois[i].habilidades = cjto_aleat(aleat(1, 3), N_HABILIDADES)))
             return 0;

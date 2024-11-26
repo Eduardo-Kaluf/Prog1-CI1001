@@ -61,9 +61,8 @@ int enqueue (struct fila_t *f, int valor) {
 
     f->tamanho += 1;
 
-    if (f->tamanho > f->max) {
+    if (f->tamanho > f->max)
         f->max = f->tamanho;
-    }
 
     return f->tamanho;
 }

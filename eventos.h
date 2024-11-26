@@ -32,8 +32,10 @@ struct ev_m {
     int mi_id;
 };
 
-// Representa um evento genérico
-// Utilizado para inserir eventos na LEF
+/*
+ * Representa um evento genérico.
+ * Utilizado para inserir eventos na LEF.
+*/
 struct evento {
     int info1;
     int info2;
@@ -41,15 +43,15 @@ struct evento {
 
 /* 
  * Inicia os primeiros eventos do mundo:
- *  - Chegada dos heróis
- *  - Agenda as missões
- *  - Agenda o fim do mundo
+ *  - Agenda quando cada herói CHEGA em alguma base
+ *  - Agenda cada MISSÃO
+ *  - Agenda o FIM do mundo
 */
 int inicia_eventos (struct mundo_t *m);
 
 /*
  * Atualiza as informações que se relacionam as missões.
- * Que serão utilizadas para gerar o relatório no final do mundo.
+ * Essas informações serão utilizadas para gerar o relatório no final do mundo.
 */
 void att_ev_mi_info (struct mundo_t *m, int mi_id, int b_id, int bmp);
 
@@ -60,19 +62,19 @@ int add_evento (struct mundo_t *m, int tipo, int tempo, int info1, int info2);
 
 /*
  * Representa um herói chegando em uma Base.
- *  - Ao chegar, o herói analisa o tamanho da Fila e as vagas da Base 
+ *  - Ao chegar, o Herói analisa o tamanho da Fila e as vagas da Base 
  *  - Então decide se ESPERA para entrar ou DESISTE
 */
 void chega (struct ev_hb *e, struct mundo_t *m);
 
 /*
- * O herói entra na Fila de espera da Base.
- *  - Assim que o herói entra na Fila, AVISA o porteiro da Base
+ * O Herói entra na Fila de espera da Base.
+ *  - Assim que o Herói entra na Fila, AVISA o porteiro da Base
 */
 void espera (struct ev_hb *e, struct mundo_t *m);
 
 /*
- * O herói desiste de entrar na Base.
+ * O Herói desiste de entrar na Base.
  *  - Escolhe uma Base aleatória e VIAJA para lá. 
 */
 void desiste (struct ev_hb *e, struct mundo_t *m);
