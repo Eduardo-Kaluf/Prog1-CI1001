@@ -105,7 +105,7 @@ void destroi_missoes(struct missao_t missoes[]) {
 }
 
 int main () {
-    srand(0);
+    srand(6);
  
     struct mundo_t m;
     

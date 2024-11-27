@@ -280,6 +280,8 @@ void missao(struct ev_m *e, struct mundo_t *m) {
     int risco, j, bmp = 0, tempo = m->relogio;
     int herois[B_LOTACAO_MAX];
 
+    mi.tentativa += 1;
+
     // Calcula a distância de cada base em relação a missão
     for (int i = 0; i < N_BASES; i++) {
         distancias[i] = (struct dist_base) {
